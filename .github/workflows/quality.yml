@@ -46,7 +46,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           mkdir -p prev
-          tag=$(gh release view --json tagName -q .tagName 2>/dev/null || true)
+          tag=$(gh release list --exclude-drafts --limit 1 --json tagName -q '.[0].tagName' 2>/dev/null || true)
           if [ -z "$tag" ]; then echo "No previous release to compare with."; exit 0; fi
           gh release download "$tag" --dir prev --pattern '*.pdf'
           {
