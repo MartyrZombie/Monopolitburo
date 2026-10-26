@@ -61,11 +61,13 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          notes=$(awk -v v="## $GITHUB_REF_NAME" '$0 ~ "^"v {f=1; next} /^## v/ {f=0} f' CHANGELOG.md)
+          {
+            echo "Print MONOPOLITBURO_${GITHUB_REF_NAME}_Complete.pdf for everything. Page 1 is the checklist by paper type."
+            echo
+            awk -v v="## $GITHUB_REF_NAME" 'index($0, v) == 1 {f=1; next} /^## v/ {f=0} f' CHANGELOG.md
+          } > release-notes.md
           prerelease=""
           case "$GITHUB_REF_NAME" in v0.*) prerelease="--prerelease" ;; esac
           gh release create "$GITHUB_REF_NAME" out/*.pdf \
             --title "MONOPOLITBURO $GITHUB_REF_NAME" \
-            --notes "Print MONOPOLITBURO_${GITHUB_REF_NAME}_Complete.pdf for everything. Page 1 is the checklist by paper type.
-
-$notes" $prerelease
+            --notes-file release-notes.md $prerelease
