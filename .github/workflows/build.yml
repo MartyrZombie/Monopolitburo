@@ -12,12 +12,12 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
 
@@ -60,7 +60,7 @@ jobs:
         run: python src/qc.py
 
       - name: Upload build
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: monopolitburo-print-files
           path: out/*.pdf
@@ -73,7 +73,7 @@ jobs:
         run: |
           grep -q "^## $TAG" CHANGELOG.md || { echo "CHANGELOG.md has no '## $TAG' section"; exit 1; }
           # update pack: only the pages that changed since the previous release
-          prev=$(gh release list --exclude-drafts --limit 1 --json tagName -q '.[0].tagName' || true)
+          prev=$(gh api "repos/$GITHUB_REPOSITORY/releases?per_page=20" --jq '[.[] | select(.draft | not)][0].tag_name // empty')
           : > out/update-notes.md
           if [ -n "$prev" ]; then
             mkdir -p prev && gh release download "$prev" --dir prev --pattern '*.pdf'

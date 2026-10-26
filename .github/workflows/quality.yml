@@ -9,12 +9,12 @@ on:
 
 jobs:
   quality:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
 
@@ -49,9 +49,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           mkdir -p prev
-          tag=$(gh release list --exclude-drafts --limit 1 --json tagName -q '.[0].tagName' 2>/dev/null || true)
-          if [ -z "$tag" ]; then echo "No previous release to compare with."; exit 0; fi
+          tag=$(gh api "repos/$GITHUB_REPOSITORY/releases?per_page=20" --jq '[.[] | select(.draft | not)][0].tag_name // empty')
+          if [ -z "$tag" ]; then echo "::notice title=Update pack preview::No previous release to compare with."; exit 0; fi
           gh release download "$tag" --dir prev --pattern '*.pdf'
+          echo "Downloaded $(ls prev | wc -l) files from $tag" 
           {
             echo "## Update pack preview: changes since $tag"
             echo
@@ -65,11 +66,13 @@ jobs:
             echo '```'
             echo "</details>"
           } | tee -a "$GITHUB_STEP_SUMMARY"
+          # one-line result on the run page (and readable through the API)
+          echo "::notice title=Update pack preview vs $tag::$(head -c 900 out/update-notes.md | tr '\n' ' ')"
 
       - name: Upload update pack preview
         if: always()
         continue-on-error: true
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: update-pack-preview
           path: out/*Update_from*.pdf
