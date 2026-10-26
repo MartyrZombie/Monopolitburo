@@ -48,6 +48,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          trap 'echo "::warning title=Update pack preview failed::$BASH_COMMAND (line $LINENO)"' ERR
           mkdir -p prev
           tag=$(gh api "repos/$GITHUB_REPOSITORY/releases?per_page=20" --jq '[.[] | select(.draft | not)][0].tag_name // empty')
           if [ -z "$tag" ]; then echo "::notice title=Update pack preview::No previous release to compare with."; exit 0; fi

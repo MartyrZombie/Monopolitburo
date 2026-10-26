@@ -28,7 +28,7 @@ The owner is MartyrZombie. Work in short reviewable chunks and propose changes b
 ## Build and check
 
 ```bash
-pip install -r requirements.txt          # reportlab, pypdf, Pillow; poppler-utils for pdftoppm
+pip install -r requirements.txt          # reportlab, pypdf, Pillow, pdfplumber; poppler-utils for pdftoppm
 python3 src/build_package.py             # everything into out/
 python3 src/qc.py                        # must print "0 failed" before you push
 python3 src/update_pack.py PREV_DIR vA.B.C   # optional: update pack against a previous release's PDFs

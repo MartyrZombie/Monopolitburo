@@ -72,6 +72,7 @@ jobs:
           TAG: ${{ steps.version.outputs.tag }}
         run: |
           grep -q "^## $TAG" CHANGELOG.md || { echo "CHANGELOG.md has no '## $TAG' section"; exit 1; }
+          trap 'echo "::error title=Release failed::$BASH_COMMAND (line $LINENO)"' ERR
           # update pack: only the pages that changed since the previous release
           prev=$(gh api "repos/$GITHUB_REPOSITORY/releases?per_page=20" --jq '[.[] | select(.draft | not)][0].tag_name // empty')
           : > out/update-notes.md

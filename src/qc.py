@@ -40,6 +40,19 @@ if os.environ.get('QC_RELEASE') == '1':
 else:
     check('CHANGELOG mentions current or upcoming version', VERSION in cl_heads or 'Unreleased' in cl_heads)
 
+# ------------------------------------------------------------------ repository
+import ast, glob as _glob
+_local = {os.path.basename(f)[:-3] for f in _glob.glob(os.path.join(HERE, '*.py'))}
+_mods = set()
+for f in _glob.glob(os.path.join(HERE, '*.py')):
+    for n in ast.walk(ast.parse(open(f).read())):
+        if isinstance(n, ast.Import): _mods |= {a.name.split('.')[0] for a in n.names}
+        elif isinstance(n, ast.ImportFrom) and n.module and n.level == 0: _mods.add(n.module.split('.')[0])
+_third = _mods - _local - set(sys.stdlib_module_names)
+_req = {l.split('>=')[0].split('==')[0].strip().lower() for l in open(os.path.join(HERE, '..', 'requirements.txt')) if l.strip() and not l.startswith('#')}
+_missing = sorted(m for m in _third if {'PIL': 'pillow'}.get(m, m).lower() not in _req)
+check('requirements.txt covers every third-party import in src/', not _missing, _missing)
+
 # ------------------------------------------------------------------ component counts
 check('22 enterprise deeds', len(G.D) == 22, len(G.D))
 check('4 railways and 2 utilities', len(G.RAIL) == 4 and len(G.UTIL) == 2)
