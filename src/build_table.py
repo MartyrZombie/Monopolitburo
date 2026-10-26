@@ -1,7 +1,6 @@
 from common import *
 from table import *
-O = '../out/'
-c = canvas.Canvas(O+'Monopolitburo_v0.2.0_4_Table_Pieces.pdf', pagesize=letter); c.setTitle('MONOPOLITBURO %s - aids, trackers, chits' % VERSION)
+c = canvas.Canvas(outname('4_Table_Pieces'), pagesize=letter); c.setTitle('MONOPOLITBURO %s - aids, trackers, chits' % VERSION)
 # aids: 3 sheets single-sided -> 1 secretary + 5 citizen
 for n, (a, b) in enumerate([(secretary_aid, citizen_aid), (citizen_aid, citizen_aid), (citizen_aid, citizen_aid)]):
     sheet_head(c, 'Player aids  |  sheet %d of 3' % (n+1), 'Ivory cardstock, 100% / Actual size, one side. Each aid is 6 x 4 in.')

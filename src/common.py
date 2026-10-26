@@ -6,7 +6,12 @@ from reportlab.lib.colors import Color, black, white
 from reportlab.lib.fonts import addMapping
 import math
 
-VERSION = 'v0.2.0'
+import os as _os
+_ROOT = _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))
+VERSION = 'v' + open(_os.path.join(_ROOT, 'VERSION')).read().strip()
+OUT = _os.path.join(_ROOT, 'out') + _os.sep
+_os.makedirs(OUT, exist_ok=True)
+def outname(part): return OUT + 'Monopolitburo_%s_%s.pdf' % (VERSION, part)
 IN = 72.0
 W, H = letter
 RED = Color(0.80, 0.07, 0.10)
@@ -17,10 +22,10 @@ GOLDC = Color(1, 0.85, 0.2)
 ORANGE = Color(0.95, 0.52, 0.20)
 YEL = Color(0.98, 0.84, 0.25)
 
-G = '/usr/share/fonts/truetype/google-fonts/'
+G = _os.environ.get('POPPINS_DIR', '/usr/share/fonts/truetype/google-fonts').rstrip('/') + '/'
 pdfmetrics.registerFont(TTFont('HeadB', G+'Poppins-Bold.ttf'))
 pdfmetrics.registerFont(TTFont('HeadM', G+'Poppins-Medium.ttf'))
-T1 = '/usr/share/fonts/X11/Type1/'
+T1 = _os.environ.get('TYPE1_DIR', '/usr/share/fonts/X11/Type1').rstrip('/') + '/'
 for name, stem in [('Mono', 'c0419bt_'), ('MonoB', 'c0583bt_'), ('MonoI', 'c0582bt_'), ('MonoBI', 'c0611bt_')]:
     face = pdfmetrics.EmbeddedType1Face(T1+stem+'.afm', T1+stem+'.pfb')
     pdfmetrics.registerTypeFace(face)

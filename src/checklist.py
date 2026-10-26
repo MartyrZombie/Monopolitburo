@@ -11,7 +11,7 @@ rows = [('ORANGE cardstock, 65 lb', '2-3', '2', 'Directives from Moscow, 16 card
  ('WHITE cardstock, 65 lb', '23', '1', 'Blat chits, 20.', 'One side.'),
  ('Matte sticker paper', '24', '1', 'Year track sticker, 2 copies.', 'One side. The only new sticker.'),
  ('Plain paper', '25-30', '3', 'Rules of Play, 6 pages, with the change log.', 'Double-sided. Staple the corner.')]
-c = canvas.Canvas('checklist.pdf', pagesize=letter)
+c = canvas.Canvas(OUT + 'checklist.pdf', pagesize=letter)
 c.setFillColor(RED); c.rect(40, H-78, W-80, 38, fill=1, stroke=0); hdraw(c, 'MONOPOLITBURO', 52, H-66, 'HeadB', 20, color=white, anchor='l', ucyr=True)
 c.setFillColor(white); c.setFont('MonoB', 9.5); c.drawRightString(W-86, H-63, VERSION + '  UPDATE CHECKLIST'); hammer_sickle(c, W-62, H-59, 12, color=GOLDC)
 y = para(c, 'This is the %s update, 30 pages. It replaces every card, aid and tracker from v0.1.0 and adds one board sticker. The board stickers you already applied stay as they are. Print every page at 100%% / Actual size.' % VERSION, 40, H-90, W-80, 'Mono', 9.4, leading=12)

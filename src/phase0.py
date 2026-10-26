@@ -7,7 +7,7 @@ def heading(c, text, sub):
     para(c, sub, 36, H-72, W-72, 'Mono', 9, leading=11.5)
 def foot(c, t): c.setFont('Mono', 7.5); c.setFillColor(GREY); c.drawCentredString(W/2, 22, 'MONOPOLITBURO %s  |  Phase 0  |  %s  |  Print at 100%% / Actual size' % (VERSION, t))
 
-out = '../out/Monopolitburo_v0.2.0_Phase0_Samples.pdf'
+out = outname('Phase0_Samples')
 c = canvas.Canvas(out, pagesize=letter); c.setTitle('MONOPOLITBURO %s - Phase 0 samples' % VERSION)
 # page 1: year sticker + tracker + chit
 heading(c, 'Year track sticker and Suspicion tracker', 'Print on plain paper first. Lay the Year track in the centre of the board, between the title banner and the Community Chest outline, and tell me if it needs to grow or shrink.')

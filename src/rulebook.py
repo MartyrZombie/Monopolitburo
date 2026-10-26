@@ -148,4 +148,4 @@ def build(path):
     doc.addPageTemplates([PageTemplate(id='cover', frames=[Frame(40, 40, W-80, 20, id='c')], onPage=cover), PageTemplate(id='body', frames=frames, onPage=page), PageTemplate(id='back', frames=[Frame(40, 40, W-80, 20, id='b')], onPage=back)])
     doc.build([NextPageTemplate('body'), PageBreak()] + S + [NextPageTemplate('back'), PageBreak(), Spacer(1, 1)])
 if __name__ == '__main__':
-    build('../out/Monopolitburo_v0.2.0_5_Rulebook.pdf'); print('ok')
+    build(outname('5_Rulebook')); print('ok')

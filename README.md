@@ -21,40 +21,50 @@ Secretary, and keep an eye on your Suspicion: at 5, the black car comes and you 
 
 ## Printing
 
+Download the latest print files from **[Releases](https://github.com/MartyrZombie/Monopolitburo/releases/latest)**.
+
 | File | What it is |
 | --- | --- |
-| [`print/v0.2.0/MONOPOLITBURO_v0.2.0_Complete.pdf`](print/v0.2.0/MONOPOLITBURO_v0.2.0_Complete.pdf) | Everything for v0.2.0 in one file. Page 1 is the checklist by paper type. |
-| [`print/v0.2.0/`](print/v0.2.0/) | The same pages split into decks, deeds, characters, table pieces and rulebook. |
-| [`print/board-stickers/`](print/board-stickers/) | Board stickers (unchanged since v0.1.0): name patches, full spaces, corners, deck labels, title banner, maker's mark. |
+| `MONOPOLITBURO_vX.Y.Z_Complete.pdf` | Everything in one file. Page 1 is the checklist by paper type. |
+| `Monopolitburo_vX.Y.Z_1_Decks.pdf` … `5_Rulebook.pdf` | The same pages split by component. |
+| `Monopolitburo_v0.1.0_Board_Stickers.pdf` | Board stickers (unchanged since v0.1.0), also in [`print/board-stickers/`](print/board-stickers/). |
 
-Deeds and character cards are double-sided: print a FRONTS page, flip the sheet on its long edge,
-then print the BACKS page that follows it.
+Print at **100% / Actual size**. Deeds and character cards are double-sided: print a FRONTS page, flip the
+sheet on its long edge, then print the BACKS page that follows it.
 
 ## Building from source
 
-The `src/` folder holds the Python scripts that generate every PDF in `print/v0.2.0/`.
-
 ```bash
-pip install reportlab
-mkdir -p out && cd src
-python3 build_cards.py      # decks, deeds, characters
-python3 build_table.py      # aids, Suspicion trackers, Blat chits, Year track sticker
-python3 rulebook.py         # rulebook with glossary and change log
+pip install -r requirements.txt
+python3 src/build_package.py
 ```
 
-All game numbers and card text live in [`src/game.py`](src/game.py). The version string lives in
-[`src/common.py`](src/common.py).
+Everything lands in `out/`. All game numbers and card text live in [`src/game.py`](src/game.py); the version
+lives in the [`VERSION`](VERSION) file and is stamped on every printed piece.
 
-**Fonts** are not bundled. The scripts expect:
+**Fonts** are not bundled:
 
-- [Poppins](https://fonts.google.com/specimen/Poppins) Bold and Medium (SIL Open Font License) at
-  `/usr/share/fonts/truetype/google-fonts/`
-- Courier 10 Pitch (Bitstream Type 1) at `/usr/share/fonts/X11/Type1/`. On Debian and Ubuntu:
-  `sudo apt install xfonts-scalable`
-
-Adjust the paths at the top of `src/common.py` for your system.
+- [Poppins](https://fonts.google.com/specimen/Poppins) Bold and Medium (SIL Open Font License). Set
+  `POPPINS_DIR` if they aren't in `/usr/share/fonts/truetype/google-fonts/`.
+- Courier 10 Pitch (Bitstream Type 1). On Debian and Ubuntu: `sudo apt install xfonts-scalable`. Set
+  `TYPE1_DIR` if it isn't in `/usr/share/fonts/X11/Type1/`.
 
 The board-sticker generator was not preserved between v0.1.0 and v0.2.0; the sticker PDF is provided as-is.
+
+## Development and releases
+
+- All work happens on the **`develop`** branch. `main` only receives finished releases.
+- Every push to `develop` builds the PDFs in GitHub Actions. Download them from the run's **Artifacts** to
+  test-print before releasing.
+- Versions follow `MAJOR.MINOR.PATCH`. While in beta (0.x): a rules change bumps MINOR, a wording, art or
+  layout fix bumps PATCH. 1.0.0 means out of beta.
+
+To cut a release:
+
+1. On `develop`, update [`VERSION`](VERSION) and add a `## vX.Y.Z` section to [`CHANGELOG.md`](CHANGELOG.md).
+2. Merge `develop` into `main`.
+3. Tag `main` with `vX.Y.Z` and push the tag. Actions checks the tag matches `VERSION`, builds every PDF and
+   publishes them as a GitHub Release.
 
 ## License
 
