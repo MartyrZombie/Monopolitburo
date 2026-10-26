@@ -15,12 +15,13 @@ The owner is MartyrZombie. Work in short reviewable chunks and propose changes b
 | `src/game.py` | **Source of truth** for all game numbers and card text: deeds, fees, quotas, Kulak Line, characters, both decks. |
 | `src/stickers.py` | Board sticker pieces and the 22 name patches (`PATCHES`). |
 | `src/rulebook.py` | Rules text and the glossary (`GLOSS`). |
-| `src/checklist.py` | Page 1 of the package. Page ranges are computed; the `UPGRADE` block is hand-written per release. |
+| `src/checklist.py` | Page 1 of the package. Page ranges, paper counts and the previous release are all computed. |
 | `src/common.py` | Fonts, colours, faux-Cyrillic headlines, hammer and sickle, version stamp, output paths. |
 | `src/mascot.py`, `poses.py`, `busts.py` | Comrade Kopeikin and the character portraits, all original line art. |
 | `src/cards.py`, `table.py` | Card, deed, aid, tracker, chit and Year-track renderers. |
 | `src/build_*.py`, `build_package.py` | Builders. `build_package.py` runs them all and assembles the complete PDF. |
 | `src/qc.py` | Quality check: the design rules below, as code, plus checks on the built PDFs. |
+| `src/update_pack.py` | Update pack: only the pages that changed since the previous release, with a guide. |
 | `src/pdfdiff.py` | Page-by-page text and pixel comparison of two builds. |
 | `out/` | Build output. Git-ignored; never commit PDFs. Releases carry them. |
 
@@ -30,7 +31,8 @@ The owner is MartyrZombie. Work in short reviewable chunks and propose changes b
 pip install -r requirements.txt          # reportlab, pypdf, Pillow; poppler-utils for pdftoppm
 python3 src/build_package.py             # everything into out/
 python3 src/qc.py                        # must print "0 failed" before you push
-python3 src/pdfdiff.py OLD_DIR out       # optional: what changed since a previous build
+python3 src/update_pack.py PREV_DIR vA.B.C   # optional: update pack against a previous release's PDFs
+python3 src/pdfdiff.py OLD_DIR out       # optional: page-by-page comparison of two builds
 ```
 
 Fonts are not bundled: Poppins Bold and Medium (`POPPINS_DIR`, default `/usr/share/fonts/truetype/google-fonts`)
@@ -77,6 +79,10 @@ These are the owner's decisions. `src/qc.py` enforces every one it can; when you
 - Aids are postcard-brief and single-sided. Suspicion and the Year are tracked with black glass beads on separate
   trackers and a board sticker. Blat stays as cardstock chits.
 - The rulebook has an even page count of 8 or fewer so its back cover lands on the back of a sheet.
+- Returning players reprint as little as possible. Every release ships an update pack with only the pages whose
+  printed pieces changed. Double-sided sheets go in front and back together; the rulebook is one object and goes in
+  whole if any page changed. Version stamps and the printing notes at the top and bottom of sheets don't count as
+  changes. Keep piece positions stable between releases so an edit touches as few sheets as possible.
 
 ## Branches, versions and releases
 
@@ -85,18 +91,18 @@ These are the owner's decisions. `src/qc.py` enforces every one it can; when you
   print fix bumps PATCH. 1.0.0 means out of beta.
 - Record changes under `## Unreleased` at the top of `CHANGELOG.md` as you make them.
 - To release:
-  1. On `develop`: set `VERSION`, rename `## Unreleased` to `## vX.Y.Z (Month YYYY)`, and update the `UPGRADE`
-     block in `src/checklist.py` (`UPGRADE_FROM` is the previous release; list only what a returning player must
-     reprint, and what to keep). Run the build and QC.
+  1. On `develop`: set `VERSION` and rename `## Unreleased` to `## vX.Y.Z (Month YYYY)`. Run the build and QC.
   2. Merge `develop` into `main` (fast-forward) and push.
-  3. GitHub Actions runs QC in release mode, builds every PDF, tags the commit and publishes a pre-release with the
-     PDFs attached and the changelog section as notes. Nothing else to do.
+  3. GitHub Actions runs QC in release mode, builds every PDF, builds the update pack against the previous release,
+     tags the commit and publishes a pre-release with all PDFs attached. The notes say what to reprint, then quote
+     the changelog section. Nothing else to do.
 
 ## Continuous integration
 
 - `.github/workflows/quality.yml`: on every push and PR to `develop` and `main`, builds and runs `src/qc.py`.
   On `main` it runs with `QC_RELEASE=1`, which requires a changelog section for `VERSION` and no `Unreleased`.
-  It also compares the build with the latest release and writes the differences to the run summary.
+  It also builds a preview update pack against the latest release: what to reprint goes in the run summary and
+  the pack is uploaded as the `update-pack-preview` artifact.
 - `.github/workflows/build.yml`: builds on every push, uploads the PDFs as a run artifact, and on `main` publishes
   the release when `VERSION` has none yet. The QC gate runs before publishing.
 

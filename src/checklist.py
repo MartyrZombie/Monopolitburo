@@ -4,13 +4,17 @@ from reportlab.platypus import Table, TableStyle, Paragraph
 from reportlab.lib.styles import ParagraphStyle
 from pypdf import PdfReader
 
-# ---- Update this block for each release (CLAUDE.md, "Cutting a release") --------------------------
-UPGRADE_FROM = 'v0.2.0'          # the previous release a returning player has printed
-UPGRADE = [
-    'Reprint: the Kuntsevo name patch (sticker page, 1 patch) and the rulebook. Everything else is unchanged.',
-    'Keep: all other stickers, cards, deeds, aids, trackers and chits from %s.' % UPGRADE_FROM,
-]
-# ------------------------------------------------------------------------------------------------
+def previous_release():
+    """The release a returning player has printed, read from CHANGELOG.md."""
+    import os, re
+    text = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'CHANGELOG.md')).read()
+    heads = re.findall(r'^## (v\d+\.\d+\.\d+|Unreleased)', text, re.M)
+    versions = [h for h in heads if h != 'Unreleased']
+    released = versions if 'Unreleased' in heads else [h for h in versions if h != VERSION]
+    return released[0] if released else None
+
+UPGRADE_FROM = previous_release()
+UPDATE_PACK = 'MONOPOLITBURO_%s_Update_from_%s.pdf' % (VERSION, UPGRADE_FROM) if UPGRADE_FROM else None
 
 def pages(part): return len(PdfReader(outname(part)).pages)
 
@@ -61,9 +65,12 @@ def build():
             if r[0].startswith(k): style.append(('BACKGROUND', (0, i+1), (-1, i+1), col))
     t.setStyle(TableStyle(style))
     tw, th = t.wrapOn(c, W-80, 600); t.drawOn(c, 40, y-12-th); y = y-12-th-14
-    hdraw(c, 'Already have %s?' % UPGRADE_FROM, 40, y-10, 'HeadB', 11, color=RED, anchor='l'); y -= 15
-    for ln in UPGRADE: y = para(c, '- ' + ln, 40, y, W-80, 'Mono', 9, leading=11.4) - 2
-    y -= 8; hdraw(c, 'Paper to buy for a full set', 40, y-10, 'HeadB', 11, color=RED, anchor='l'); y -= 15
+    if UPGRADE_FROM:
+        hdraw(c, 'Already have %s?' % UPGRADE_FROM, 40, y-10, 'HeadB', 11, color=RED, anchor='l'); y -= 15
+        y = para(c, "- Don't print all of this. Print %s from the same release instead: it holds only the pages that changed, "
+                    "with a guide marking which pieces to cut. Keep everything else you have." % UPDATE_PACK, 40, y, W-80, 'Mono', 9, leading=11.4) - 2
+        y -= 8
+    hdraw(c, 'Paper to buy for a full set', 40, y-10, 'HeadB', 11, color=RED, anchor='l'); y -= 15
     parts = ['%d %s' % (v, k.lower()) for k, v in sheets.items() if k not in ('Matte sticker paper', 'Plain paper')]
     y = para(c, '- %s sheets of 65 lb cardstock, %d sheets of matte full-sheet sticker paper, %d plain. Buy a few spares for test prints.' % (', '.join(parts), sheets.get('Matte sticker paper', 0), sheets['Plain paper']), 40, y, W-80, 'Mono', 9, leading=11.4)
     y = para(c, '- From your Monopoly set: the board, the money from 10 up, dice, tokens, 20 houses and 8 hotels. Add about 10 black glass beads, and a third die for 6 players.', 40, y-2, W-80, 'Mono', 9, leading=11.4)

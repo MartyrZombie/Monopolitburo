@@ -69,9 +69,20 @@ jobs:
           TAG: ${{ steps.version.outputs.tag }}
         run: |
           grep -q "^## $TAG" CHANGELOG.md || { echo "CHANGELOG.md has no '## $TAG' section"; exit 1; }
+          # update pack: only the pages that changed since the previous release
+          prev=$(gh release list --limit 1 --json tagName -q '.[0].tagName' || true)
+          : > out/update-notes.md
+          if [ -n "$prev" ]; then
+            mkdir -p prev && gh release download "$prev" --dir prev --pattern '*.pdf'
+            python src/update_pack.py prev "$prev"
+          fi
           {
             echo "Print **MONOPOLITBURO_${TAG}_Complete.pdf** for everything. Page 1 is the checklist by paper type."
             echo
+            echo
+            cat out/update-notes.md
+            echo
+            echo "## What changed"
             awk -v v="## $TAG" 'index($0, v) == 1 {f=1; next} /^## v/ {f=0} f' CHANGELOG.md
           } > release-notes.md
           prerelease=""

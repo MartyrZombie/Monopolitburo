@@ -183,11 +183,8 @@ if all(present.values()) and os.path.exists(complete):
     m = re.search(r'(\d+) pages', cl_text)
     check('Checklist page count matches the package', m and int(m.group(1)) == len(rc.pages), m and m.group(1))
     import checklist as CK
-    versions = [h for h in cl_heads if h != 'Unreleased']
-    # with an Unreleased section, the last release is the newest version heading; otherwise the one before VERSION
-    released = versions if 'Unreleased' in cl_heads else [h for h in versions if h != VERSION]
-    prev = released[0] if released else None
-    check('Checklist upgrade notes start from the last release (%s)' % prev, CK.UPGRADE_FROM == prev, CK.UPGRADE_FROM)
+    released = [h for h in cl_heads if h != 'Unreleased']
+    check('Checklist points returning players at the update pack from the last release', (CK.UPGRADE_FROM in released) and CK.UPDATE_PACK and CK.UPDATE_PACK in re.sub(r'\s+', '', cl_text), CK.UPDATE_PACK)
     rows, total, _ = CK.rows_and_totals()
     covered = set()
     for r in rows:

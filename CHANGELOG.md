@@ -11,6 +11,7 @@ Fixes found by the new quality check. Patch release.
 - Sticker placement key and two sheet instructions no longer run off the page.
 - Board stickers are built from source again and carry the version number.
 - The rulebook change log is generated from this file.
+- New: every release includes an update pack with only the pages that changed since the last one, and a guide marking which pieces to cut.
 
 ## v0.2.0 (October 2026)
 

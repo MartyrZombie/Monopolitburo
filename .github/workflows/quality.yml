@@ -39,22 +39,35 @@ jobs:
           QC_RELEASE: ${{ github.ref == 'refs/heads/main' && '1' || '0' }}
         run: python src/qc.py
 
-      - name: Compare with the latest release
+      - name: Preview the update pack against the latest release
         if: always()
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           mkdir -p prev
-          if gh release download --dir prev --pattern '*.pdf' 2>/dev/null; then
-            tag=$(gh release view --json tagName -q .tagName)
-            {
-              echo "## Changes since $tag"
-              echo
-              echo '```'
-              python src/pdfdiff.py prev out
-              echo '```'
-            } | tee -a "$GITHUB_STEP_SUMMARY"
-          else
-            echo "No previous release to compare with."
-          fi
+          tag=$(gh release view --json tagName -q .tagName 2>/dev/null || true)
+          if [ -z "$tag" ]; then echo "No previous release to compare with."; exit 0; fi
+          gh release download "$tag" --dir prev --pattern '*.pdf'
+          {
+            echo "## Update pack preview: changes since $tag"
+            echo
+            python src/update_pack.py prev "$tag" > /dev/null
+            cat out/update-notes.md
+            echo
+            echo "<details><summary>Page-by-page comparison</summary>"
+            echo
+            echo '```'
+            python src/pdfdiff.py prev out
+            echo '```'
+            echo "</details>"
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload update pack preview
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: update-pack-preview
+          path: out/*Update_from*.pdf
+          if-no-files-found: ignore

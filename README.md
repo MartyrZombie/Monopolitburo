@@ -27,6 +27,7 @@ Download the latest print files from **[Releases](https://github.com/MartyrZombi
 | --- | --- |
 | `MONOPOLITBURO_vX.Y.Z_Complete.pdf` | Everything in one file. Page 1 is the checklist by paper type. |
 | `Monopolitburo_vX.Y.Z_0_Board_Stickers.pdf` … `5_Rulebook.pdf` | The same pages split by component. |
+| `MONOPOLITBURO_vX.Y.Z_Update_from_vA.B.C.pdf` | **Already playing?** Only the pages that changed since the previous release, with a guide that boxes each changed piece in red. |
 
 Print at **100% / Actual size**. Deeds and character cards are double-sided: print a FRONTS page, flip the
 sheet on its long edge, then print the BACKS page that follows it.
@@ -55,6 +56,7 @@ lives in the [`VERSION`](VERSION) file and is stamped on every printed piece.
 - Every push to `develop` and `main` runs the **Quality check** workflow: about 100 automated checks of the
   design rules (money in tens, classic prices, glossary coverage, plain Russian words, page counts, margins,
   version stamps and more), plus a page-by-page comparison with the latest release in the run summary.
+- Each push to `develop` also previews the next update pack, so you can see what returning players would reprint.
 - Every push also builds the PDFs. Download them from the run's **Artifacts** to test-print before releasing.
 - [`CLAUDE.md`](CLAUDE.md) holds the full design rules and working notes for anyone, human or Claude, picking this up.
 - Versions follow `MAJOR.MINOR.PATCH`. While in beta (0.x): a rules change bumps MINOR, a wording, art or
@@ -62,11 +64,11 @@ lives in the [`VERSION`](VERSION) file and is stamped on every printed piece.
 
 To cut a release:
 
-1. On `develop`, update [`VERSION`](VERSION), rename the `## Unreleased` section of [`CHANGELOG.md`](CHANGELOG.md)
-   to `## vX.Y.Z (Month YYYY)`, and update the upgrade notes at the top of [`src/checklist.py`](src/checklist.py).
+1. On `develop`, update [`VERSION`](VERSION) and rename the `## Unreleased` section of [`CHANGELOG.md`](CHANGELOG.md)
+   to `## vX.Y.Z (Month YYYY)`.
 2. Merge `develop` into `main`.
 
-That's it. When `main` gets a `VERSION` that has no release yet, Actions runs the quality check, builds every PDF, tags the commit
+That's it. When `main` gets a `VERSION` that has no release yet, Actions runs the quality check, builds every PDF and the update pack, tags the commit
 `vX.Y.Z` and publishes a GitHub Release with the PDFs attached and the changelog section as its notes.
 Releases before 1.0.0 are marked as pre-releases. Merging to `main` without bumping `VERSION` just builds.
 
