@@ -2,6 +2,16 @@
 
 MONOPOLITBURO is in beta. Rules changes bump the minor version; wording and layout fixes bump the patch.
 
+## Unreleased
+
+Fixes found by the new quality check. Patch release.
+
+- Kuntsevo name patch: the N is no longer mirrored, matching the deed and the plain-Russian rule. Reprint that one patch.
+- Glossary: added the eight Russian words behind the character surnames (Byvshaya, Pervy, Repka, Rifmach, Shashka, Ushko, Vintik, Zhelezo).
+- Sticker placement key and two sheet instructions no longer run off the page.
+- Board stickers are built from source again and carry the version number.
+- The rulebook change log is generated from this file.
+
 ## v0.2.0 (October 2026)
 
 After two playtests.

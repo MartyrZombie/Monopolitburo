@@ -6,7 +6,9 @@ from reportlab.lib.styles import ParagraphStyle
 body = ParagraphStyle('body', fontName='Mono', fontSize=8.9, leading=11.2, spaceAfter=3.2, textColor=black)
 bul = ParagraphStyle('bul', parent=body, leftIndent=11, bulletIndent=1, spaceAfter=2.2); num = ParagraphStyle('num', parent=bul)
 gls = ParagraphStyle('gls', parent=body, fontName='MonoI', fontSize=8.1, leading=10, textColor=FLAV, spaceAfter=4)
-glo = ParagraphStyle('glo', parent=body, fontSize=8.0, leading=9.8, spaceAfter=2.6, leftIndent=8, firstLineIndent=-8)
+glo = ParagraphStyle('glo', parent=body, fontSize=7.9, leading=9.3, spaceAfter=2.0, leftIndent=8, firstLineIndent=-8)
+cl_p = ParagraphStyle('clp', parent=body, fontSize=8.2, leading=10, spaceAfter=2)
+cl_b = ParagraphStyle('clb', parent=cl_p, leftIndent=11, bulletIndent=1, spaceAfter=1.4)
 B = lambda s: '<font name="MonoB">%s</font>' % s
 class Head(Flowable):
     def __init__(self, text, size=12.5, top=7): Flowable.__init__(self); self.text, self.size, self.top = text, size, top; self.keepWithNext = 1
@@ -86,39 +88,100 @@ S = [Head('The game in one minute', top=0),
   Bl('If any citizen ends above the %s, the richest citizen wins.' % B('Kulak Line of %s rubles' % K)), Bl('If nobody does, the sitting Secretary wins, having kept the district properly equal.'),
   Head('12. The golden rule'), P('Where the rules are silent, the Secretary decides. The Secretary may be persuaded.'),
 ]
-GLOSS = [('Anekdot', 'A political joke. Telling one could earn a sentence under Article 58.'), ('Apparatchik', 'A full-time functionary of the Party machine, the "apparat."'), ('Article 58', 'The criminal code article covering "counter-revolutionary activity," defined very loosely.'),
- ('Belomorkanal', 'The White Sea-Baltic Canal, dug by prisoner labor from 1931 to 1933.'), ('Blat', "The informal economy of favors and connections that got you what rubles couldn't."), ('Bolshoi', '"Big." Moscow\'s grand theatre, also used for Party congresses.'),
- ('Brak', 'Defective output, the chronic result of plans that counted quantity only.'), ('Bumazhka', 'A scrap of official paper. "Without a bumazhka you\'re a bug."'), ('Byvshiye lyudi', '"Former people": ex-nobles, merchants and clergy stripped of rights after the Revolution.'),
- ('Dacha', 'A country house.'), ('DniproHES', 'The Dnieper Hydroelectric Station, completed in 1932.'), ('Donos', 'A written denunciation.'), ('Doska pochyota', 'The Board of Honor, displaying portraits of model workers.'),
- ('Dostat', '"To obtain." The verb for getting scarce goods, since simply buying them wasn\'t possible.'), ('Furazhka', "The peaked military cap with a stiff visor. Comrade Kopeikin's hat."), ('Glavlit', 'The central censorship office, founded in 1922.'),
- ('Gosplan', 'The State Planning Committee, which wrote the Five-Year Plans.'), ('Gosstrakh', 'The state insurance monopoly, founded in 1921.'), ('Gulag', 'Acronym for the Main Administration of Camps, which ran the forced-labor camp system.'),
- ('Iz-pod prilavka', '"From under the counter," where shop clerks kept the real inventory.'), ('Kassa', "The cashier's window where wages were paid."), ('Kolkhoz', 'A collective farm. A kolkhoznik is one of its peasants.'), ('Komandirovka', 'An official business trip.'),
- ('Kombinat', 'A large integrated industrial complex.'), ('Kommunalka', 'A communal apartment, with one room per family and a shared kitchen and bathroom.'), ('Kopeika', 'The smallest Soviet coin, one hundredth of a ruble, and the root of Comrade Kopeikin\'s name.'),
- ('Kreml', '"Fortress." The origin of the word Kremlin.'), ('Kulak', 'A "wealthy" peasant, a label applied very freely during collectivization.'), ('MTS', 'Machine-Tractor Station, a state depot that rented machinery to collective farms.'),
- ('Narkomat', "A People's Commissariat, the Soviet name for a ministry until 1946."), ('NKVD', "The People's Commissariat for Internal Affairs, the secret police of the Stalin era."), ('Ochered', 'The queue.'), ('Organs, the', 'Everyday shorthand for the organs of state security.'),
- ('Osoaviakhim', 'A mass "voluntary" civil-defense society.'), ('Partbilet', 'The Party membership card.'), ('Patronymic', "A middle name built from the father's first name, used with the first name as polite address."), ('Poluchka', 'Slang for payday.'),
- ('Pravda', '"Truth." The Party\'s official newspaper.'), ('Premiya', 'The bonus paid for hitting plan targets.'), ('Pripiski', '"Write-ins": the routine inflating of plan results.'), ('Prodavets', 'A shop clerk.'), ('Propiska', 'The residence permit stamped in the internal passport.'),
- ('Putyovka', 'A trade-union voucher for a state holiday resort.'), ('Rehabilitation', "The official clearing of a purge victim's name, usually posthumous."), ('Seksot', 'Short for "secret collaborator," an informant for the secret police.'), ('Shabashka', 'An off-the-books side job.'),
- ('Shturmovshchina', '"Storming": the frantic month-end scramble to meet the plan.'), ('Socialist emulation', 'Official competition between work brigades for banners and pennants.'), ('Spekulant', 'A black marketeer. Reselling goods for profit was a crime.'),
- ('Spets', 'A "bourgeois specialist" trained before the Revolution.'), ('Stakhanovite', 'A record-setting worker, named for miner Alexei Stakhanov.'), ('Stolovaya', 'A workplace canteen.'), ('Subbotnik', 'A day of "voluntary" unpaid Saturday labor.'),
- ('Tolkuchka', 'A "push market," a tolerated flea market.'), ('Torgsin', 'State shops (1931-36) that sold scarce goods only for gold, silver or foreign currency.'), ('Turksib', 'The Turkestan-Siberia Railway, finished in 1931.'),
- ('Udarnik', 'A "shock worker," the official title for quota-smashers.'), ('VEB', 'Volkseigener Betrieb, "people-owned enterprise," the prefix of every East German state firm.'), ('Voronok', '"Little raven," the nickname for the black police vans.'), ('Vreditelstvo', '"Wrecking": the charge of deliberate industrial sabotage.')]
+GLOSS = [('Anekdot', 'A political joke. Telling one could earn a sentence under Article 58.'),
+ ('Apparatchik', 'A full-time functionary of the Party machine, the "apparat."'),
+ ('Article 58', 'The criminal code article covering "counter-revolutionary activity," defined very loosely.'),
+ ('Belomorkanal', 'The White Sea-Baltic Canal, dug by prisoner labor from 1931 to 1933.'),
+ ('Blat', "The informal economy of favors and connections that got you what rubles couldn't."),
+ ('Bolshoi', '"Big." Moscow\'s grand theatre, also used for Party congresses.'),
+ ('Brak', 'Defective output, the chronic result of plans that counted quantity only.'),
+ ('Bumazhka', 'A scrap of official paper. "Without a bumazhka you\'re a bug."'),
+ ('Byvshaya', '"Former" (feminine). The root of the Former Person\'s surname.'),
+ ('Byvshiye lyudi', '"Former people": ex-nobles, merchants and clergy stripped of rights after the Revolution.'),
+ ('Dacha', 'A country house.'),
+ ('DniproHES', 'The Dnieper Hydroelectric Station, completed in 1932.'),
+ ('Donos', 'A written denunciation.'),
+ ('Doska pochyota', 'The Board of Honor, displaying portraits of model workers.'),
+ ('Dostat', '"To obtain." The verb for getting scarce goods, since simply buying them wasn\'t possible.'),
+ ('Furazhka', "The peaked military cap with a stiff visor. Comrade Kopeikin's hat."),
+ ('Glavlit', 'The central censorship office, founded in 1922.'),
+ ('Gosplan', 'The State Planning Committee, which wrote the Five-Year Plans.'),
+ ('Gosstrakh', 'The state insurance monopoly, founded in 1921.'),
+ ('Gulag', 'Acronym for the Main Administration of Camps, which ran the forced-labor camp system.'),
+ ('Iz-pod prilavka', '"From under the counter," where shop clerks kept the real inventory.'),
+ ('Kassa', "The cashier's window where wages were paid."),
+ ('Kolkhoz', 'A collective farm. A kolkhoznik is one of its peasants.'),
+ ('Komandirovka', 'An official business trip.'),
+ ('Kombinat', 'A large integrated industrial complex.'),
+ ('Kommunalka', 'A communal apartment, with one room per family and a shared kitchen and bathroom.'),
+ ('Kopeika', "The smallest Soviet coin, one hundredth of a ruble, and the root of Comrade Kopeikin's name."),
+ ('Kreml', '"Fortress." The origin of the word Kremlin.'),
+ ('Kulak', 'A "wealthy" peasant, a label applied very freely during collectivization.'),
+ ('MTS', 'Machine-Tractor Station, a state depot that rented machinery to collective farms.'),
+ ('Narkomat', "A People's Commissariat, the Soviet name for a ministry until 1946."),
+ ('NKVD', "The People's Commissariat for Internal Affairs, the secret police of the Stalin era."),
+ ('Ochered', 'The queue.'),
+ ('Organs, the', 'Everyday shorthand for the organs of state security.'),
+ ('Osoaviakhim', 'A mass "voluntary" civil-defense society.'),
+ ('Partbilet', 'The Party membership card.'),
+ ('Patronymic', "A middle name built from the father's first name, used with the first name as polite address."),
+ ('Pervy', '"First," as in first to join the Party and first on the list.'),
+ ('Poluchka', 'Slang for payday.'),
+ ('Pravda', '"Truth." The Party\'s official newspaper.'),
+ ('Premiya', 'The bonus paid for hitting plan targets.'),
+ ('Pripiski', '"Write-ins": the routine inflating of plan results.'),
+ ('Prodavets', 'A shop clerk.'),
+ ('Propiska', 'The residence permit stamped in the internal passport.'),
+ ('Putyovka', 'A trade-union voucher for a state holiday resort.'),
+ ('Rehabilitation', "The official clearing of a purge victim's name, usually posthumous."),
+ ('Repka', '"Little turnip," after the folk tale where the whole village pulls together on one vegetable.'),
+ ('Rifmach', 'A rhymester, a hack who writes verse to order.'),
+ ('Seksot', 'Short for "secret collaborator," an informant for the secret police.'),
+ ('Shabashka', 'An off-the-books side job.'),
+ ('Shashka', 'The cavalry sabre of the Civil War.'),
+ ('Shturmovshchina', '"Storming": the frantic month-end scramble to meet the plan.'),
+ ('Socialist emulation', 'Official competition between work brigades for banners and pennants.'),
+ ('Spekulant', 'A black marketeer. Reselling goods for profit was a crime.'),
+ ('Spets', 'A "bourgeois specialist" trained before the Revolution.'),
+ ('Stakhanovite', 'A record-setting worker, named for miner Alexei Stakhanov.'),
+ ('Stolovaya', 'A workplace canteen.'),
+ ('Subbotnik', 'A day of "voluntary" unpaid Saturday labor.'),
+ ('Tolkuchka', 'A "push market," a tolerated flea market.'),
+ ('Torgsin', 'State shops (1931-36) that sold scarce goods only for gold, silver or foreign currency.'),
+ ('Turksib', 'The Turkestan-Siberia Railway, finished in 1931.'),
+ ('Udarnik', 'A "shock worker," the official title for quota-smashers.'),
+ ('Ushko', '"Little ear."'),
+ ('VEB', 'Volkseigener Betrieb, "people-owned enterprise," the prefix of every East German state firm.'),
+ ('Vintik', '"Little screw." Stalin once toasted ordinary citizens as the little screws of the state machine.'),
+ ('Voronok', '"Little raven," the nickname for the black police vans.'),
+ ('Vreditelstvo', '"Wrecking": the charge of deliberate industrial sabotage.'),
+ ('Zhelezo', 'Iron.')]
 S += [Head('Glossary'), G('Every Russian word and Soviet term in the game.')] + [Paragraph('%s  %s' % (B(t), m), glo) for t, m in GLOSS]
-S += [Head('Change log'), G('MONOPOLITBURO is in beta. Every printed piece carries its version. Rules changes bump the middle number, wording and layout fixes the last.'),
-  P(B('v0.2.0, October 2026.') + ' After two playtests.'),
-  Bl('Denunciation is once per round, not once per Year. The Seksot gets two. The Secretary gets one free.'), Bl('Refusing an Inspection bribe is +2 Suspicion. The richest citizen takes +2 at year end and the second richest +1.'),
-  Bl('Appointments and auction wins cost 20 extra per point of the buyer\'s Suspicion.'), Bl('New ways down: Subbotnik (100 to drop 1), a denunciation that jails someone (drop 1), visiting the Gulag corner (drop 1).'),
-  Bl('Auctions spelled out: opens at 10, bids in 10s, Secretary keeps 30.'), Bl('The Secretary\'s powers and limits written down. The District Fund is public.'),
-  Bl('Quotas raised. Kulak Line lowered from 4,000 to %s. A Secretary who misses the final quota hands the win to the richest citizen.' % K),
-  Bl('Red Army Officer: free railways and 1 Blat, but +1 Suspicion whenever anyone is disappeared. The Year 3 penalty is gone.'),
-  Bl('All amounts rounded to 10s and the 1 and 5 notes retired. Pledge and redeem values printed on every deed, with the purchase price.'),
-  Bl('Aids are single-sided. Suspicion trackers are separate cards, the Year track is a board sticker, and black glass beads replace the house and hotel markers.'),
-  P(B('v0.1.0, September 2026.') + ' First printed set.')]
+def changelog_flowables():
+    """The rulebook's change log is generated from CHANGELOG.md, so the two never drift apart."""
+    import os, re
+    text = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'CHANGELOG.md')).read()
+    esc = lambda t: t.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+    md = lambda t: re.sub(r'\*\*(.+?)\*\*', r'<font name="MonoB">\1</font>', re.sub(r'`([^`]+)`', r'\1', esc(t)))
+    out = [Head('Change log'), G('MONOPOLITBURO is in beta. Every printed piece carries its version. Rules changes bump the middle number, wording and layout fixes the last.')]
+    blocks = re.split(r'^## ', text, flags=re.M)[1:]
+    for block in blocks[:2]:
+        lines = block.strip().splitlines()
+        head = lines[0].strip()
+        m = re.match(r'(v\d+\.\d+\.\d+|Unreleased)\s*(?:\((.+)\))?', head)
+        title = m.group(1) + (', ' + m.group(2) if m.group(2) else '') + '.'
+        if m.group(1) == 'Unreleased': title = 'Unreleased (in testing).'
+        intro = [l.strip() for l in lines[1:] if l.strip() and not l.startswith(('-', '#'))]
+        out.append(Paragraph(B(esc(title)) + (' ' + md(' '.join(intro)) if intro else ''), cl_p))
+        out += [Paragraph(md(l.strip()[2:]), cl_b, bulletText='\xb7') for l in lines[1:] if l.strip().startswith('- ')]
+    if len(blocks) > 2:
+        out.append(G('Earlier versions: CHANGELOG.md at github.com/MartyrZombie/Monopolitburo'))
+    return out
+S += changelog_flowables()
 S += [Head('Building your copy'), P(B('Board stickers, in this order:')),
   N(1, 'The four corners and the 14 full-space stickers. Each carries its own black border and sits over the board\'s printed lines.'), N(2, 'The 22 name patches, tucked against the colour bar.'), N(3, 'The two deck labels, over the Chance and Community Chest outlines.'),
   N(4, 'The title bar, piece A then piece B.'), N(5, 'The mascot piece last.'), N(6, 'The maker\'s mark over the oval logo, and the Year track below the title bar.'),
-  P(B('Cards:')), Bl('Directives on orange stock and Kitchen Rumors on yellow, one side only.'), Bl('Deeds and character cards are double-sided: print a FRONTS page, flip the sheet on its long edge, then print the BACKS page that follows it.'),
-  Bl('Aids and trackers are single-sided on ivory stock. Chits on white.'),
+  P('Paper types and the double-sided routine are on page 1 of the print package.'),
   P(B('Tuning:') + ' the quota track, the Kulak Line and the 200 ruble starting Fund are still estimates. If the Secretary is purged every game, lower the quotas. If the Secretary always wins, lower the Kulak Line. Only the two aids, the Year sticker and this rulebook carry those numbers.')]
 
 def cover(c, doc):
@@ -141,11 +204,24 @@ def back(c, doc):
 def page(c, doc):
     c.saveState(); c.setFillColor(RED); c.rect(40, H-46, W-80, 3, fill=1, stroke=0); hdraw(c, 'MONOPOLITBURO', 40, H-38, 'HeadB', 9, color=black, anchor='l', ucyr=True)
     c.setFillColor(FLAV); c.setFont('Mono', 8); c.drawRightString(W-40, H-38, 'Rules of Play  ' + VERSION); c.drawCentredString(W/2, 28, '- %d -' % doc.page); c.restoreState()
-def build(path):
+class Lines(Flowable):
+    def wrap(self, aw, ah): self.aw, self.ah = aw, ah - 4; return aw, ah - 4
+    def draw(self):
+        c = self.canv; c.setStrokeColor(Color(0.8, 0.8, 0.8)); c.setLineWidth(0.5)
+        y = self.ah - 22
+        while y > 6: c.line(0, y, self.aw, y); y -= 20
+
+def build(path, notes_page=False):
     doc = BaseDocTemplate(path, pagesize=letter, title='MONOPOLITBURO %s - Rules of Play' % VERSION, author='MONOPOLITBURO')
     fw = (W-80-22)/2; fh = H-46-14-48
     frames = [Frame(40, 48, fw, fh, id='l', leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0), Frame(40+fw+22, 48, fw, fh, id='r', leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0)]
     doc.addPageTemplates([PageTemplate(id='cover', frames=[Frame(40, 40, W-80, 20, id='c')], onPage=cover), PageTemplate(id='body', frames=frames, onPage=page), PageTemplate(id='back', frames=[Frame(40, 40, W-80, 20, id='b')], onPage=back)])
-    doc.build([NextPageTemplate('body'), PageBreak()] + S + [NextPageTemplate('back'), PageBreak(), Spacer(1, 1)])
+    notes = [NextPageTemplate('notes'), PageBreak(), Head('Notes and house rules', top=0), Lines()] if notes_page else []
+    doc.addPageTemplates([PageTemplate(id='notes', frames=[Frame(40, 48, W-80, fh, id='n', leftPadding=0, rightPadding=0, topPadding=0, bottomPadding=0)], onPage=page)])
+    import copy
+    doc.build([NextPageTemplate('body'), PageBreak()] + copy.deepcopy(S) + notes + [NextPageTemplate('back'), PageBreak(), Spacer(1, 1)])
+    return doc.page
 if __name__ == '__main__':
-    build(outname('5_Rulebook')); print('ok')
+    # The back cover must land on the back of the last sheet, so the page count must be even.
+    if build(outname('5_Rulebook')) % 2: build(outname('5_Rulebook'), notes_page=True)
+    print('ok')

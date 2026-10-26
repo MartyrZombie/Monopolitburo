@@ -8,7 +8,7 @@ for n, (a, b) in enumerate([(secretary_aid, citizen_aid), (citizen_aid, citizen_
     for i, fn in enumerate((a, b)): fn(c, x0, y0-(i+1)*AH-i*14); crop_marks(c, x0, y0-(i+1)*AH-i*14, AW, AH)
     c.showPage()
 # suspicion trackers: 6 on one sheet
-sheet_head(c, 'Suspicion trackers  |  1 to 5 of 6', 'Ivory cardstock, 100% / Actual size, one side. One per citizen, 6 x 1.75 in. A black glass bead marks your Suspicion.')
+sheet_head(c, 'Suspicion trackers  |  1 to 5 of 6', 'Ivory cardstock, 100% / Actual size, one side. One per citizen. A black glass bead marks your Suspicion.')
 x0 = (W-6*IN)/2; y0 = H-56
 for i in range(5): suspicion_tracker(c, x0, y0-(i+1)*1.75*IN-i*6); crop_marks(c, x0, y0-(i+1)*1.75*IN-i*6, 6*IN, 1.75*IN)
 c.showPage()
@@ -24,7 +24,7 @@ yy = rich(c, 40, y0-4*IN-24, W-80, 'Blat: spend one to cancel a single payment o
 rich(c, 40, yy-4, W-80, "Blat was the informal economy of favors and connections that got you what rubles couldn't.", size=8, color=FLAV)
 c.showPage()
 # year sticker
-sheet_head(c, 'Year track sticker', 'Sticker paper, 100% / Actual size. Apply in the centre of the board below the title banner. A black glass bead marks the Year, and the District Fund sits beside it face up.')
+sheet_head(c, 'Year track sticker', 'Sticker paper, 100% / Actual size. Apply in the centre of the board, below the title banner.')
 year_sticker(c, (W-YW)/2, H-80-YH); year_sticker(c, (W-YW)/2, H-80-YH-20-YH)
 c.setFont('Mono', 7.5); c.setFillColor(GREY); c.drawCentredString(W/2, H-80-2*YH-32, 'Two copies: one to apply, one spare.')
 c.showPage(); c.save(); print('ok')

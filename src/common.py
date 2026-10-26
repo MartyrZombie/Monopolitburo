@@ -118,7 +118,9 @@ def vstamp(c, x, y, size=4.6, color=GREY):
 
 def sheet_head(c, title, note):
     c.setFillColor(black); c.setFont('MonoB', 9); c.drawString(40, H-26, 'MONOPOLITBURO %s  |  %s' % (VERSION, title))
-    c.setFont('Mono', 8); c.drawString(40, H-38, note)
+    size = 8
+    while sw(note, 'Mono', size) > W-80 and size > 6: size -= 0.25
+    c.setFont('Mono', size); c.drawString(40, H-38, note)
 
 def ddr_logo(c, cx, cy, oval=True):
     w, h = 1.7*IN, 1.0*IN

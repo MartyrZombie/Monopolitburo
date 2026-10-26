@@ -7,13 +7,14 @@ import os, subprocess, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 os.chdir(HERE)
-for script in ('build_cards.py', 'build_table.py', 'rulebook.py', 'checklist.py'):
+for script in ('build_stickers.py', 'build_cards.py', 'build_table.py', 'rulebook.py', 'checklist.py'):
     print('building', script, flush=True)
     subprocess.run([sys.executable, script], check=True)
 
 from common import OUT, VERSION, outname
 from pypdf import PdfWriter
-parts = [OUT + 'checklist.pdf'] + [outname(p) for p in ('1_Decks', '2_Deeds', '3_Characters', '4_Table_Pieces', '5_Rulebook')]
+from checklist import ORDER
+parts = [OUT + 'checklist.pdf'] + [outname(p) for p in ORDER]
 w = PdfWriter()
 for p in parts:
     w.append(p)

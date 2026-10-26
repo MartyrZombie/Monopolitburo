@@ -23,7 +23,7 @@ jobs:
       - name: Install fonts
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq xfonts-scalable
+          sudo apt-get install -y -qq xfonts-scalable poppler-utils
           mkdir -p "$HOME/fonts/poppins"
           for w in Bold Medium; do
             curl -sSfL -o "$HOME/fonts/poppins/Poppins-$w.ttf" \
@@ -51,8 +51,10 @@ jobs:
       - name: Build PDFs
         run: python src/build_package.py
 
-      - name: Add board stickers
-        run: cp print/board-stickers/*.pdf out/
+      - name: Quality gate
+        env:
+          QC_RELEASE: ${{ github.ref == 'refs/heads/main' && '1' || '0' }}
+        run: python src/qc.py
 
       - name: Upload build
         uses: actions/upload-artifact@v4
