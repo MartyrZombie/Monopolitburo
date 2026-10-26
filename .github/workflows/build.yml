@@ -3,7 +3,8 @@ name: Build print files
 on:
   push:
     branches: [develop, main]
-    tags: ['v*']
+  release:
+    types: [published]
   pull_request:
     branches: [main, develop]
   workflow_dispatch:
@@ -36,12 +37,12 @@ jobs:
       - name: Install Python packages
         run: pip install -r requirements.txt
 
-      - name: Check tag matches VERSION
-        if: startsWith(github.ref, 'refs/tags/v')
+      - name: Check release tag matches VERSION
+        if: github.event_name == 'release'
         run: |
           file="v$(cat VERSION | tr -d '[:space:]')"
           if [ "$file" != "$GITHUB_REF_NAME" ]; then
-            echo "Tag $GITHUB_REF_NAME does not match VERSION file ($file)"; exit 1
+            echo "Release tag $GITHUB_REF_NAME does not match VERSION file ($file)"; exit 1
           fi
 
       - name: Build PDFs
@@ -56,18 +57,15 @@ jobs:
           name: monopolitburo-print-files
           path: out/*.pdf
 
-      - name: Publish release
-        if: startsWith(github.ref, 'refs/tags/v')
+      - name: Attach print files to the release
+        if: github.event_name == 'release'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           {
-            echo "Print MONOPOLITBURO_${GITHUB_REF_NAME}_Complete.pdf for everything. Page 1 is the checklist by paper type."
+            echo "Print **MONOPOLITBURO_${GITHUB_REF_NAME}_Complete.pdf** for everything. Page 1 is the checklist by paper type."
             echo
             awk -v v="## $GITHUB_REF_NAME" 'index($0, v) == 1 {f=1; next} /^## v/ {f=0} f' CHANGELOG.md
           } > release-notes.md
-          prerelease=""
-          case "$GITHUB_REF_NAME" in v0.*) prerelease="--prerelease" ;; esac
-          gh release create "$GITHUB_REF_NAME" out/*.pdf \
-            --title "MONOPOLITBURO $GITHUB_REF_NAME" \
-            --notes-file release-notes.md $prerelease
+          gh release upload "$GITHUB_REF_NAME" out/*.pdf --clobber
+          gh release edit "$GITHUB_REF_NAME" --notes-file release-notes.md

@@ -63,8 +63,9 @@ To cut a release:
 
 1. On `develop`, update [`VERSION`](VERSION) and add a `## vX.Y.Z` section to [`CHANGELOG.md`](CHANGELOG.md).
 2. Merge `develop` into `main`.
-3. Tag `main` with `vX.Y.Z` and push the tag. Actions checks the tag matches `VERSION`, builds every PDF and
-   publishes them as a GitHub Release.
+3. On GitHub, **Releases → Draft a new release**, create tag `vX.Y.Z` on `main`, tick *Set as a pre-release*
+   while in beta, and publish. Actions checks the tag matches `VERSION`, builds every PDF, attaches them to
+   the release and fills in the notes from the changelog. Leave the notes blank; they get replaced.
 
 ## License
 
